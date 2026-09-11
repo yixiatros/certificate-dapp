@@ -1,18 +1,21 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { AuthState } from '../Types/Auth';
+import type { AuthState, UserProfile } from '../Types/Auth';
 import { UseMetaMask } from '../Hooks/UseMetaMask';
-import { SESSION_DURATION_MS, BuildSignInMessage, ClearSession, LoadValidSession, SaveSession,} from '../Utils/Session';
+import { SESSION_DURATION_MS, BuildSignInMessage, ClearSession, LoadValidSession, SaveSession } from '../Utils/Session';
+import { fetchUserProfile } from '../Utils/Contract';
 
 interface AuthContextValue extends AuthState {
     login: () => Promise<void>;
     logout: () => void;
+    refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [address, setAddress] = useState<string | null>(null);
+    const [profile, setProfile] = useState<UserProfile | null>(null);
     const [expiresAt, setExpiresAt] = useState<number | null>(null);
     const [isConnecting, setIsConnecting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -20,8 +23,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const clearLogoutTimer = () => {
         if (logoutTimer.current) {
-        clearTimeout(logoutTimer.current);
-        logoutTimer.current = null;
+            clearTimeout(logoutTimer.current);
+            logoutTimer.current = null;
         }
     };
 
@@ -29,21 +32,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ClearSession();
         clearLogoutTimer();
         setAddress(null);
+        setProfile(null);
         setExpiresAt(null);
     }, []);
+
+    const refreshProfile = useCallback(async () => {
+        if (!address) return;
+        try {
+            const userProfile = await fetchUserProfile(address);
+            setProfile(userProfile);
+        } catch (err) {
+            console.error('Failed to refresh user profile:', err);
+        }
+    }, [address]);
 
     // If MetaMask reports a different (or no) account than the active
     // session, the session is no longer trustworthy - drop it.
     const handleAccountsChanged = useCallback(
         (nextAccount: string | null) => {
-        setAddress((current) => {
-            if (!current) return current;
-            if (!nextAccount || nextAccount.toLowerCase() !== current.toLowerCase()) {
-            logout();
-            return null;
-            }
-            return current;
-        });
+            setAddress((current) => {
+                if (!current) return current;
+                if (!nextAccount || nextAccount.toLowerCase() !== current.toLowerCase()) {
+                    logout();
+                    return null;
+                }
+                return current;
+            });
         },
         [logout],
     );
@@ -59,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
         }
         logoutTimer.current = setTimeout(logout, msRemaining);
-    },[logout],);
+    }, [logout]);
 
     useEffect(() => {
         const session = LoadValidSession();
@@ -67,16 +81,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (session) {
             setAddress(session.address);
             setExpiresAt(session.expiresAt);
+            if (session.profile) {
+                setProfile(session.profile);
+            }
+            // Fetch latest contract role asynchronously to verify/update
+            fetchUserProfile(session.address).then((p) => {
+                setProfile(p);
+            });
             scheduleAutoLogout(session.expiresAt);
         }
 
         return clearLogoutTimer;
-    }, []);
+    }, [scheduleAutoLogout]);
 
     const login = useCallback(async () => {
         setError(null);
         setIsConnecting(true);
-        
+
         try {
             const account = await requestAccounts();
             const issuedAt = Date.now();
@@ -85,18 +106,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const signature = await signMessage(message, account);
             const expiry = issuedAt + SESSION_DURATION_MS;
 
-            SaveSession({ address: account, signature, message, issuedAt, expiresAt: expiry });
+            const userProfile = await fetchUserProfile(account);
+
+            SaveSession({
+                address: account,
+                signature,
+                message,
+                issuedAt,
+                expiresAt: expiry,
+                profile: userProfile,
+            });
+
             setAddress(account);
+            setProfile(userProfile);
             setExpiresAt(expiry);
             scheduleAutoLogout(expiry);
         } catch (err) {
             const message =
                 err instanceof Error
-                ? // MetaMask rejects with code 4001 when the user cancels - surface that plainly.
-                    err.message.includes('User rejected')
-                    ? 'Signature request was rejected.'
-                    : err.message
-                : 'Something went wrong connecting to MetaMask.';
+                    ? err.message.includes('User rejected')
+                        ? 'Signature request was rejected.'
+                        : err.message
+                    : 'Something went wrong connecting to MetaMask.';
             setError(message);
             logout();
         } finally {
@@ -105,16 +136,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [requestAccounts, signMessage, scheduleAutoLogout, logout]);
 
     const value = useMemo<AuthContextValue>(() => ({
-            address,
-            isAuthenticated: !!address,
-            isConnecting,
-            isMetaMaskInstalled,
-            error,
-            expiresAt,
-            login,
-            logout,
-        }), 
-        [address, isConnecting, isMetaMaskInstalled, error, expiresAt, login, logout],
+        address,
+        profile,
+        isAuthenticated: !!address,
+        isConnecting,
+        isMetaMaskInstalled,
+        error,
+        expiresAt,
+        login,
+        logout,
+        refreshProfile,
+    }),
+        [address, profile, isConnecting, isMetaMaskInstalled, error, expiresAt, login, logout, refreshProfile],
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -122,8 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthContextValue {
     const ctx = useContext(AuthContext);
-    
+
     if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
-    
+
     return ctx;
 }
