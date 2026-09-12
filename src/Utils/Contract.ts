@@ -5,11 +5,30 @@ import { UserRole, type UserProfile } from '../Types/Auth';
 export const ERGASIA_ABI = [
     "function admin() view returns (address)",
     "function users(address) view returns (address userAddress, string name, uint256 role, bool active)",
-    "function issuers(address) view returns (address issuerAddress, string name, bool active)"
+    "function issuers(address) view returns (address issuerAddress, string name, bool active)",
+    "function registerUser(address _userAddress, string _name, uint256 _role) public"
 ];
 
 // Configurable contract address (can be set via environment variable or default fallback)
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || "0x0000000000000000000000000000000000000000";
+
+/**
+ * Register a new user in the smart contract (admin only).
+ */
+export async function registerUser(userAddress: string, name: string, role: number): Promise<ethers.ContractTransactionReceipt | null> {
+    if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Web3 wallet (MetaMask) is not available.');
+    }
+
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
+
+    const tx = await contract.registerUser(userAddress, name, role);
+    const receipt = await tx.wait();
+    return receipt;
+}
+
 
 /**
  * Fetch role and user info for a given address directly from the smart contract.

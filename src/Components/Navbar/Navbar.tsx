@@ -6,9 +6,7 @@ import Modal from '../Modal/Modal';
 import { useAuth } from '../../Context/AuthContext';
 import { USER_ROLE_LABELS, UserRole } from '../../Types/Auth';
 
-interface Props { }
-
-const Navbar = (_props: Props) => {
+const Navbar = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { isAuthenticated, address, profile, logout } = useAuth();
 
