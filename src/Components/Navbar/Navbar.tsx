@@ -30,9 +30,19 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="hidden font-bold lg:flex">
-            {profile?.role === UserRole['Admin'] && (
+            {profile?.role === UserRole.Admin && (
               <Link to="/Admin Dashboard" className="text-white hover:text-darkBlue">
                 Dashboard
+              </Link>
+            )}
+            {profile?.role === UserRole.Issuer && (
+              <Link to="/Issuer Dashboard" className="text-white hover:text-darkBlue">
+                Dashboard
+              </Link>
+            )}
+            {profile?.role === UserRole.Holder && (
+              <Link to="/My Certificates" className="text-white hover:text-darkBlue">
+                My Certificates
               </Link>
             )}
           </div>

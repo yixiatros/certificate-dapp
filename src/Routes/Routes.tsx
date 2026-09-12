@@ -8,6 +8,9 @@ import { UserRole } from "../Types/Auth";
 import AdminPage from "../Pages/AdminPage/AdminPage";
 import AdminRegisterUser from "../Components/AdminRegisterUser/AdminRegisterUser";
 import AdminProfile from "../Components/AdminProfile/AdminProfile";
+import IssueCertificate from "../Components/IssueCertificate/IssueCertificate";
+import IssuerPage from "../Pages/IssuerPage/IssuerPage";
+import HolderPage from "../Pages/HolderPage/HolderPage";
 
 export const router = createBrowserRouter([
     {
@@ -17,30 +20,35 @@ export const router = createBrowserRouter([
             { path: "", element: <HomePage /> },
             { path: "SignIn", element: <SigninPage /> },
             { path: "Privacy Policy", element: <PrivacyPolicy /> },
-            { path: "Admin Dashboard", element: (
-                <ProtectedRoute requireAdmin>
-                    <AdminPage />
-                </ProtectedRoute>
-              ), children: [
-                { index: true, element: <Navigate to="Admin Profile" replace /> },
-                {path: "Admin Profile", element: <AdminProfile /> },
-                { path: "Register User", element: (
-                    <ProtectedRoute requireAdmin>
-                        <AdminRegisterUser />
+            {
+                path: "My Certificates",
+                element: (
+                    <ProtectedRoute allowedRoles={[UserRole.Holder]}>
+                        <HolderPage />
                     </ProtectedRoute>
-                )}
-              ]
+                )
             },
-            { path: "Issue Certificate", element: (
-                <ProtectedRoute allowedRoles={[UserRole.Issuer]}>
-                    <div>Issuer Page: Issue New Certificate</div>
-                </ProtectedRoute>
-            )},
-            { path: "Revoke Certificate", element: (
-                <ProtectedRoute allowedRoles={[UserRole.RevocationOfficer]}>
-                    <div>Revocation Officer Page</div>
-                </ProtectedRoute>
-            )}
+            { path: "Admin Dashboard", element: (
+                    <ProtectedRoute requireAdmin>
+                        <AdminPage />
+                    </ProtectedRoute>
+                ), children: [
+                    { index: true, element: <Navigate to="Admin Profile" replace /> },
+                    { path: "Admin Profile", element: <AdminProfile /> },
+                    { path: "Register User", element: <AdminRegisterUser /> },
+                    { path: "Issue Certificate", element: <IssueCertificate /> }
+                ]
+            },
+            { path: "Issuer Dashboard", element: (
+                    <ProtectedRoute allowedRoles={[UserRole.Issuer]}>
+                        <IssuerPage />
+                    </ProtectedRoute>
+                ), children: [
+                    { index: true, element: <Navigate to="Profile" replace /> },
+                    { path: "Profile", element: <AdminProfile /> },
+                    { path: "Issue Certificate", element: <IssueCertificate /> }
+                ]
+            }
         ]
     }
 ])
