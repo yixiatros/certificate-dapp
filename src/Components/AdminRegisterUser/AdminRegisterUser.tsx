@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, type ChangeEvent } from 'react';
 import { registerUser } from '../../Utils/Contract';
 import { UserRole, USER_ROLE_LABELS } from '../../Types/Auth';
 import { ethers } from 'ethers';
@@ -9,6 +9,20 @@ const AdminRegisterUser: React.FC = () => {
     const [role, setRole] = useState<number>(UserRole.Holder);
     const [loading, setLoading] = useState(false);
     const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [nameLabel, setNameLabel] = useState('Name:');
+
+
+    const onChangeRole = (e: ChangeEvent<HTMLSelectElement>) => {
+        const value = Number(e.target.value);
+
+        if (value === UserRole.Issuer) {
+            setNameLabel('Company Name:');
+        } else {
+            setNameLabel('Name:');
+        }
+
+        setRole(Number(e.target.value));
+    };
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
@@ -44,26 +58,19 @@ const AdminRegisterUser: React.FC = () => {
     };
 
   return (
-    <div className="max-w-xl mx-auto my-8 p-6 rounded-lg border border-gray-700 bg-gray-900 text-white shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center text-white">Register New User (Admin)</h2>
+    <div className="max-w-xl mx-auto my-8 text-white shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center text-text">Register New User</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-                <label className="block mb-2 text-sm font-bold text-gray-200">User Ethereum Address:</label>
+                <label className="mb-2 text-sm font-bold text-text">User Ethereum Address:</label>
                 <input type="text" placeholder="0x..." value={userAddress} onChange={(e) => setUserAddress(e.target.value)} required
                     className="w-full p-2.5 rounded border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-lightBlue"
                 />
             </div>
 
             <div>
-                <label className="block mb-2 text-sm font-bold text-gray-200">Name:</label>
-                <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required
-                    className="w-full p-2.5 rounded border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-lightBlue"
-                />
-            </div>
-
-            <div>
-                <label className="block mb-2 text-sm font-bold text-gray-200">Role:</label>
-                <select value={role} onChange={(e) => setRole(Number(e.target.value))}
+                <label className="mb-2 text-sm font-bold text-text">Role:</label>
+                <select value={role} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChangeRole(e)}
                     className="w-full p-2.5 rounded border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-lightBlue">
                         { Object.entries(USER_ROLE_LABELS)
                             .filter(([key]) => Number(key) !== UserRole.Unregistered)
@@ -75,13 +82,20 @@ const AdminRegisterUser: React.FC = () => {
                 </select>
             </div>
 
-            <button type="submit" disabled={loading} className={`mt-4 p-3 rounded font-bold text-white transition-opacity ${loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-lightBlue hover:opacity-80 cursor-pointer'}`}>
+            <div>
+                <label className="mb-2 text-sm font-bold text-text">{nameLabel}</label>
+                <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required
+                    className="w-full p-2.5 rounded border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-lightBlue"
+                />
+            </div>
+
+            <button type="submit" disabled={loading} className={`mt-4 p-3 rounded font-bold text-text transition-opacity ${loading ? 'bg-background cursor-not-allowed' : 'bg-lightBlue hover:opacity-80 cursor-pointer'}`}>
                 {loading ? 'Registering on Blockchain...' : 'Register User'}
             </button>
         </form>
 
         {statusMessage && (
-            <div className={`mt-6 p-4 rounded text-white break-words ${statusMessage.type === 'success' ? 'bg-green-800' : 'bg-red-800'}`}>
+            <div className={`mt-6 p-4 rounded text-text break-words ${statusMessage.type === 'success' ? 'bg-success' : 'bg-error'}`}>
               {statusMessage.text}
             </div>
         )}

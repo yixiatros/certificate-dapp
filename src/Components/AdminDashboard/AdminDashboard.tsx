@@ -10,7 +10,7 @@ const AdminDashboard = ({ children }: Props) => {
         <div className="relative pt-20 pb-32 bg-text-secondary-500">
           <div className="px-4 md:px-6 mx-auto w-full">
             <div>
-              <div className="flex flex-wrap">
+              <div className="justify-center flex flex-wrap">
                 {children}
               </div>
               <div className="flex flex-wrap">
