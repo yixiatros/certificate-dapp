@@ -58,34 +58,35 @@ const AdminRegisterUser: React.FC = () => {
     };
 
   return (
-    <div className="max-w-xl mx-auto my-8 text-white shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center text-text">Register New User</h2>
+    <div className="max-w-xl mx-auto my-8 text-text shadow-lg">
+        <h2 className="text-xl font-bold mb-6 text-center text-text">Register New User</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
                 <label className="mb-2 text-sm font-bold text-text">User Ethereum Address:</label>
                 <input type="text" placeholder="0x..." value={userAddress} onChange={(e) => setUserAddress(e.target.value)} required
-                    className="w-full p-2.5 rounded border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-lightBlue"
+                    className="w-full p-2.5 rounded border-0 border-b border-primary bg-transparent text-text focus:outline-none focus:ring-2 focus:ring-lightBlue"
                 />
             </div>
 
             <div>
                 <label className="mb-2 text-sm font-bold text-text">Role:</label>
                 <select value={role} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChangeRole(e)}
-                    className="w-full p-2.5 rounded border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-lightBlue">
+                    className="w-full p-2.5 rounded border-0 border-b border-primary bg-transparent text-text focus:outline-none focus:ring-2 focus:ring-lightBlue">
                         { Object.entries(USER_ROLE_LABELS)
                             .filter(([key]) => Number(key) !== UserRole.Unregistered)
                             .map(([key, label]) => (
-                                <option key={key} value={key}>
+                                <option className='bg-surface text-text' key={key} value={key}>
                                     {label}
-                            </option>
-                        ))}
+                                </option>
+                            )
+                        )}
                 </select>
             </div>
 
             <div>
                 <label className="mb-2 text-sm font-bold text-text">{nameLabel}</label>
                 <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required
-                    className="w-full p-2.5 rounded border border-gray-700 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-lightBlue"
+                    className="w-full p-2.5 rounded border-0 border-b border-primary bg-transparent text-text focus:outline-none focus:ring-2 focus:ring-lightBlue"
                 />
             </div>
 

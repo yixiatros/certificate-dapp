@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import App from "../App";
 import HomePage from "../Pages/HomePage/HomePage";
 import SigninPage from "../Pages/SignInPage/SignInPage";
@@ -22,6 +22,7 @@ export const router = createBrowserRouter([
                     <AdminPage />
                 </ProtectedRoute>
               ), children: [
+                { index: true, element: <Navigate to="Admin Profile" replace /> },
                 {path: "Admin Profile", element: <AdminProfile /> },
                 { path: "Register User", element: (
                     <ProtectedRoute requireAdmin>

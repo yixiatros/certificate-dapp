@@ -7,8 +7,7 @@ interface Props { }
 
 const AdminPage = (props: Props) => {
   return (
-    <div className="relative text-left flex h-screen w-full overflow-hidden">
-
+    <div className="relative text-left flex h-auto w-full overflow-hidden">
       <Sidebar />
 
       <AdminDashboard>
