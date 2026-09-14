@@ -7,10 +7,13 @@ export const ERGASIA_ABI = [
     "function users(address) view returns (address userAddress, string name, uint256 role, bool active)",
     "function issuers(address) view returns (address issuerAddress, string name, bool active)",
     "function registerUser(address _userAddress, string _name, uint256 _role) public",
-    "function registerIssuer(address _issuerAddress, string _name) public",
     "function issueCertificate(uint256 _certificateId, string _certificateType, address _holder, string _fileHash, uint256 _issueDate, uint256 _expiryDate) public",
     "function getHolderCertificates(address _holder) view returns (uint256[])",
-    "function certificates(uint256) view returns (uint256 id, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool isRevoked, string revocationReason)"
+    "function getIssuerCertificates(address _issuer) view returns (uint256[])",
+    "function certificates(uint256) view returns (uint256 id, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool isRevoked, string revocationReason)",
+    "function getAllUsers() view returns (tuple(address userAddress, string name, uint256 role, bool active)[])",
+    "function getAllCertificates() view returns (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)[])"
+
 ];
 
 // Configurable contract address (can be set via environment variable or default fallback)
@@ -29,6 +32,13 @@ export interface CertificateData {
     revocationReason: string;
 }
 
+export interface User {
+    userAddress: string;
+    name: string;
+    role: bigint;
+    active: boolean;
+}
+
 /**
  * Fetch array of certificate IDs held by a specific holder address.
  */
@@ -44,6 +54,23 @@ export async function getHolderCertificates(holderAddress: string): Promise<bigi
     const ids: bigint[] = await contract.getHolderCertificates(holderAddress);
     return ids;
 }
+
+/**
+ * Fetch array of certificate IDs issued by a specific issuer address.
+ */
+export async function getIssuerCertificates(issuerAddress: string): Promise<bigint[]> {
+    if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Web3 wallet (MetaMask) is not available.');
+    }
+
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
+
+    const ids: bigint[] = await contract.getIssuerCertificates(issuerAddress);
+    return ids;
+}
+
 
 /**
  * Fetch detailed certificate information by certificate ID.
@@ -77,23 +104,6 @@ export async function getCertificateDetails(certificateId: bigint | number): Pro
 }
 
 /**
- * Register an issuer in the smart contract (admin only).
- */
-export async function registerIssuer(issuerAddress: string, name: string): Promise<ethers.ContractTransactionReceipt | null> {
-    if (typeof window === 'undefined' || !window.ethereum) {
-        throw new Error('Web3 wallet (MetaMask) is not available.');
-    }
-
-    const provider = new ethers.BrowserProvider(window.ethereum as any);
-    const signer = await provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
-
-    const tx = await contract.registerIssuer(issuerAddress, name);
-    const receipt = await tx.wait();
-    return receipt;
-}
-
-/**
  * Register a new user in the smart contract (admin only).
  */
 export async function registerUser(userAddress: string, name: string, role: number): Promise<ethers.ContractTransactionReceipt | null> {
@@ -105,11 +115,6 @@ export async function registerUser(userAddress: string, name: string, role: numb
     const signer = await provider.getSigner();
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
 
-    if (role === UserRole.Issuer) {
-        const tx = await contract.registerIssuer(userAddress, name);
-        const receipt = await tx.wait();
-        return receipt;
-    }
 
     const tx = await contract.registerUser(userAddress, name, role);
     const receipt = await tx.wait();
@@ -233,4 +238,53 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
             isAdmin: false,
         };
     }
+}
+
+
+        
+/**
+* Gell all users (admin only).
+*/
+export async function getAllUsers(): Promise<User[]> {
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
+
+    const rawUsers = await contract.getAllUsers();
+
+    const users: User[] = rawUsers.map((user: any) => ({
+        userAddress: user.userAddress,
+        name: user.name,
+        role: user.role,
+        active: user.active
+    }));
+
+    return users;
+}
+
+
+/**
+* Gell all certificates (admin only).
+*/
+export async function getAllCertificates(): Promise<CertificateData[]> {
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
+
+    const rawCertificates = await contract.getAllCertificates();
+
+    const certificates: CertificateData[] = rawCertificates.map((cert: any) => ({
+        id: cert.certificateId,
+        certificateType: cert.certificateType,
+        issuer: cert.issuer,
+        holder: cert.holder,
+        fileHash: cert.fileHash,
+        issueDate: cert.issueDate,
+        expiryDate: cert.expiryDate,
+        status: cert.status,
+        isRevoked: cert.revoked,
+        revocationReason: cert.revocationReason
+    }));
+
+    return certificates;
 }

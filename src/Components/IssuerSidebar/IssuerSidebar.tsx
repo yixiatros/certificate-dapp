@@ -21,6 +21,9 @@ const IssuerSidebar = (props: Props) => {
               </Link>
               <Link to="Issue Certificate" className="md:min-w-full text-text-secondary-500 text-medium uppercase font-bold flex items-center pt-1 pb-4 no-underline">
                 <h6 className='ml-3'>Issue Certificate</h6>
+                      </Link>
+              <Link to="Issuer Certificates" className="md:min-w-full text-text-secondary-500 text-medium uppercase font-bold flex items-center pt-1 pb-4 no-underline">
+                <h6 className='ml-3'>Issued Certificates</h6>
               </Link>
             </div>
           </div>

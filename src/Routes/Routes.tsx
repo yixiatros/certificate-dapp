@@ -9,6 +9,7 @@ import AdminPage from "../Pages/AdminPage/AdminPage";
 import AdminRegisterUser from "../Components/AdminRegisterUser/AdminRegisterUser";
 import AdminProfile from "../Components/AdminProfile/AdminProfile";
 import IssueCertificate from "../Components/IssueCertificate/IssueCertificate";
+import IssuerCertificates from "../Components/IssuerCertificates/IssuerCertificates";
 import IssuerPage from "../Pages/IssuerPage/IssuerPage";
 import HolderPage from "../Pages/HolderPage/HolderPage";
 
@@ -45,8 +46,9 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ), children: [
                     { index: true, element: <Navigate to="Profile" replace /> },
-                    { path: "Profile", element: <AdminProfile /> },
-                    { path: "Issue Certificate", element: <IssueCertificate /> }
+                { path: "Profile", element: <AdminProfile /> },
+                { path: "Issue Certificate", element: <IssueCertificate /> },
+                { path: "Issuer Certificates", element: <IssuerCertificates /> }
                 ]
             }
         ]
