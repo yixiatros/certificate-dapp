@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { CERTIFICATE_TYPE_LABELS, CertificateType } from '../../Features/Certificate/CertificateEnums';
-import { issueCertificate } from '../../Utils/Contract';
+import { fetchUserProfile, issueCertificate } from '../../Utils/Contract';
+import { UserRole } from '../../Types/Auth';
 import { ethers } from 'ethers';
 
 type Props = {}
@@ -37,6 +38,16 @@ const IssueCertificate = (props: Props) => {
 
         try {
             setLoading(true);
+
+            // Verify if the target holder address is registered
+            const holderProfile = await fetchUserProfile(holderAddress.trim());
+            if (holderProfile.role === UserRole.Unregistered || !holderProfile.active) {
+                setStatusMessage({
+                    type: 'error',
+                    text: 'The specified Holder address is not registered in the system. An admin must register the user first.',
+                });
+                return;
+            }
 
             // Automatically compute issueDate as current Unix timestamp (in seconds)
             const issueDate = Math.floor(Date.now() / 1000);

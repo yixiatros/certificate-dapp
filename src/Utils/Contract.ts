@@ -19,6 +19,18 @@ export const ERGASIA_ABI = [
 // Configurable contract address (can be set via environment variable or default fallback)
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || "0x0000000000000000000000000000000000000000";
 
+export const isZeroAddress = (address: string): boolean => {
+    if (!address) return true;
+    const clean = address.trim();
+    return clean === '0' || clean === '0x0' || clean === '0x0000000000000000000000000000000000000000' || /^0x0+$/i.test(clean);
+};
+
+export function ensureValidContractAddress(): void {
+    if (isZeroAddress(CONTRACT_ADDRESS)) {
+        throw new Error("Contract address is not configured or is set to 0. Please set VITE_CONTRACT_ADDRESS in your environment.");
+    }
+}
+
 export interface CertificateData {
     id: bigint;
     certificateType: string;
@@ -43,6 +55,7 @@ export interface User {
  * Fetch array of certificate IDs held by a specific holder address.
  */
 export async function getHolderCertificates(holderAddress: string): Promise<bigint[]> {
+    ensureValidContractAddress();
     if (typeof window === 'undefined' || !window.ethereum) {
         throw new Error('Web3 wallet (MetaMask) is not available.');
     }
@@ -59,6 +72,7 @@ export async function getHolderCertificates(holderAddress: string): Promise<bigi
  * Fetch array of certificate IDs issued by a specific issuer address.
  */
 export async function getIssuerCertificates(issuerAddress: string): Promise<bigint[]> {
+    ensureValidContractAddress();
     if (typeof window === 'undefined' || !window.ethereum) {
         throw new Error('Web3 wallet (MetaMask) is not available.');
     }
@@ -76,6 +90,7 @@ export async function getIssuerCertificates(issuerAddress: string): Promise<bigi
  * Fetch detailed certificate information by certificate ID.
  */
 export async function getCertificateDetails(certificateId: bigint | number): Promise<CertificateData | null> {
+    ensureValidContractAddress();
     if (typeof window === 'undefined' || !window.ethereum) {
         throw new Error('Web3 wallet (MetaMask) is not available.');
     }
@@ -107,6 +122,7 @@ export async function getCertificateDetails(certificateId: bigint | number): Pro
  * Register a new user in the smart contract (admin only).
  */
 export async function registerUser(userAddress: string, name: string, role: number): Promise<ethers.ContractTransactionReceipt | null> {
+    ensureValidContractAddress();
     if (typeof window === 'undefined' || !window.ethereum) {
         throw new Error('Web3 wallet (MetaMask) is not available.');
     }
@@ -131,6 +147,7 @@ export async function issueCertificate(
     issueDate: number,
     expiryDate: number
 ): Promise<ethers.ContractTransactionReceipt | null> {
+    ensureValidContractAddress();
     if (typeof window === 'undefined' || !window.ethereum) {
         throw new Error('Web3 wallet (MetaMask) is not available.');
     }
@@ -165,6 +182,8 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
         };
     }
 
+    ensureValidContractAddress();
+
     try {
         let provider: ethers.Provider;
         if (typeof window !== 'undefined' && window.ethereum) {
@@ -172,17 +191,6 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
         } else {
             // Default fallback provider if web3 wallet is not injected
             provider = ethers.getDefaultProvider();
-        }
-
-        // If contract address is dummy/not configured, return fallback profile safely
-        if (CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000") {
-            return {
-                address: userAddress,
-                name: 'User (Demo/Unset Contract)',
-                role: UserRole.Unregistered,
-                active: true,
-                isAdmin: false,
-            };
         }
 
         const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, provider);
@@ -195,7 +203,7 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
         const formattedUserAddress = userAddress.toLowerCase();
         const isAdmin = !!adminAddress && adminAddress.toLowerCase() === formattedUserAddress;
 
-        if (userRecord && userRecord.userAddress && userRecord.userAddress !== "0x0000000000000000000000000000000000000000") {
+        if (userRecord && userRecord.userAddress && !isZeroAddress(userRecord.userAddress)) {
             const contractRoleNumber = Number(userRecord.role);
             const role = (contractRoleNumber in UserRole) ? (contractRoleNumber as UserRole) : UserRole.Unregistered;
 
@@ -228,22 +236,17 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
         };
     } catch (err) {
         console.error("Failed to query user role from contract:", err);
-        return {
-            address: userAddress,
-            name: 'User',
-            role: UserRole.Unregistered,
-            active: false,
-            isAdmin: false,
-        };
+        throw err;
     }
 }
 
 
-        
+
 /**
 * Gell all users (admin only).
 */
 export async function getAllUsers(): Promise<User[]> {
+    ensureValidContractAddress();
     const provider = new ethers.BrowserProvider(window.ethereum as any);
     const signer = await provider.getSigner();
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
@@ -265,6 +268,7 @@ export async function getAllUsers(): Promise<User[]> {
 * Gell all certificates (admin only).
 */
 export async function getAllCertificates(): Promise<CertificateData[]> {
+    ensureValidContractAddress();
     const provider = new ethers.BrowserProvider(window.ethereum as any);
     const signer = await provider.getSigner();
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
