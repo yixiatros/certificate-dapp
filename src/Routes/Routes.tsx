@@ -12,6 +12,7 @@ import IssueCertificate from "../Components/IssueCertificate/IssueCertificate";
 import IssuerCertificates from "../Components/IssuerCertificates/IssuerCertificates";
 import IssuerPage from "../Pages/IssuerPage/IssuerPage";
 import HolderPage from "../Pages/HolderPage/HolderPage";
+import RevokeCertificate from "../Components/RevokeCertificate/RevokeCertificate";
 
 export const router = createBrowserRouter([
     {
@@ -46,11 +47,16 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ), children: [
                     { index: true, element: <Navigate to="Profile" replace /> },
-                { path: "Profile", element: <AdminProfile /> },
-                { path: "Issue Certificate", element: <IssueCertificate /> },
-                { path: "Issuer Certificates", element: <IssuerCertificates /> }
+                    { path: "Profile", element: <AdminProfile /> },
+                    { path: "Issuer Certificates", element: <IssuerCertificates /> },
+                    { path: "Issue Certificate", element: <IssueCertificate /> }
                 ]
-            }
+            },
+            { path: "Revoke Certificate", element: (
+                <ProtectedRoute allowedRoles={[UserRole.RevocationOfficer]}>
+                    <RevokeCertificate /> 
+                </ProtectedRoute>
+            )}
         ]
     }
 ])

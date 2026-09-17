@@ -25,24 +25,29 @@ const Navbar = () => {
             <img src={logo} alt="Logo" />
           </Link>
           <div className="hidden font-bold lg:flex">
-            <Link to="/" className="text-white hover:text-darkBlue">
+            <Link to="/" className="text-text hover:text-darkBlue">
               HomePage
             </Link>
           </div>
           <div className="hidden font-bold lg:flex">
             {profile?.role === UserRole.Admin && (
-              <Link to="/Admin Dashboard" className="text-white hover:text-darkBlue">
+              <Link to="/Admin Dashboard" className="text-text hover:text-darkBlue">
                 Dashboard
               </Link>
             )}
             {profile?.role === UserRole.Issuer && (
-              <Link to="/Issuer Dashboard" className="text-white hover:text-darkBlue">
+              <Link to="/Issuer Dashboard" className="text-text hover:text-darkBlue">
                 Dashboard
               </Link>
             )}
             {profile?.role === UserRole.Holder && (
-              <Link to="/My Certificates" className="text-white hover:text-darkBlue">
+              <Link to="/My Certificates" className="text-text hover:text-darkBlue">
                 My Certificates
+              </Link>
+            )}
+            {profile?.role === UserRole.RevocationOfficer && (
+              <Link to="Revoke Certificate" className='text-text hover:text-darkBlue' >
+                Revoke Certificate
               </Link>
             )}
           </div>
@@ -63,7 +68,7 @@ const Navbar = () => {
               <Link to="/SignIn" className="cursor-pointer hover:text-darkBlue">
                 SignIn
               </Link>
-              <button type="button" onClick={onClickSignIn} className="px-8 py-3 font-bold rounded text-white bg-lightBlue hover:opacity-70">
+              <button type="button" onClick={onClickSignIn} className="px-8 py-3 font-bold rounded text-text bg-lightBlue hover:opacity-70">
                 Login
               </button>
             </>
