@@ -7,7 +7,7 @@ export const ERGASIA_ABI = [
     "function users(address) view returns (address userAddress, string name, uint256 role, bool active)",
     "function issuers(address) view returns (address issuerAddress, string name, bool active)",
     "function registerUser(address _userAddress, string _name, uint256 _role) public",
-    "function issueCertificate(uint256 _certificateId, string _certificateType, address _holder, string _fileHash, uint256 _issueDate, uint256 _expiryDate) public",
+    "function issueCertificate(string _certificateType, address _holder, string _fileHash, uint256 _issueDate, uint256 _expiryDate) public",
     "function getHolderCertificates(address _holder) view returns (uint256[])",
     "function getIssuerCertificates(address _issuer) view returns (uint256[])",
     "function certificates(uint256) view returns (uint256 id, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool isRevoked, string revocationReason)",
@@ -125,7 +125,6 @@ export async function registerUser(userAddress: string, name: string, role: numb
  * Issue a certificate on the smart contract (issuer only).
  */
 export async function issueCertificate(
-    certificateId: bigint | number,
     certificateType: string,
     holder: string,
     fileHash: string,
@@ -141,7 +140,6 @@ export async function issueCertificate(
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
 
     const tx = await contract.issueCertificate(
-        certificateId,
         certificateType,
         holder,
         fileHash,

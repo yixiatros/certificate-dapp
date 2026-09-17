@@ -6,7 +6,6 @@ import { ethers } from 'ethers';
 type Props = {}
 
 const IssueCertificate = (props: Props) => {
-    const [certificateId, setCertificateId] = useState('');
     const [holderAddress, setHolderAddress] = useState('');
     const [certificateType, setCertificateType] = useState<number>(CertificateType.Seminar);
     const [fileHash, setFileHash] = useState('');
@@ -25,11 +24,6 @@ const IssueCertificate = (props: Props) => {
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         setStatusMessage(null);
-
-        if (!certificateId || isNaN(Number(certificateId)) || Number(certificateId) <= 0) {
-            setStatusMessage({ type: 'error', text: 'Please enter a valid numeric Certificate ID.' });
-            return;
-        }
 
         if (!ethers.isAddress(holderAddress)) {
             setStatusMessage({ type: 'error', text: 'Please enter a valid Holder Ethereum address.' });
@@ -53,7 +47,6 @@ const IssueCertificate = (props: Props) => {
             const typeLabel = CERTIFICATE_TYPE_LABELS[certificateType as CertificateType] || 'Seminar';
 
             const receipt = await issueCertificate(
-                BigInt(certificateId),
                 typeLabel,
                 holderAddress.trim(),
                 fileHash.trim(),
@@ -66,7 +59,6 @@ const IssueCertificate = (props: Props) => {
                 text: `Certificate issued successfully! Transaction Hash: ${receipt?.hash ?? 'Confirmed'}`,
             });
 
-            setCertificateId('');
             setHolderAddress('');
             setFileHash('');
             setExpiryDate('');
@@ -84,17 +76,6 @@ const IssueCertificate = (props: Props) => {
         <div className="max-w-xl mx-auto my-8 text-text shadow-lg">
             <h2 className="text-xl font-bold mb-6 text-center text-text">Issue Certificate</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <div>
-                    <label className="mb-2 text-sm font-bold text-text">Certificate ID:</label>
-                    <input
-                        type="number"
-                        placeholder="e.g. 101"
-                        value={certificateId}
-                        onChange={(e) => setCertificateId(e.target.value)}
-                        required
-                        className="w-full p-2.5 rounded border-0 border-b border-primary bg-transparent text-text focus:outline-none focus:ring-2 focus:ring-lightBlue"
-                    />
-                </div>
 
                 <div>
                     <label className="mb-2 text-sm font-bold text-text">Holder Ethereum Address:</label>
