@@ -168,7 +168,7 @@ export async function issueCertificate(
 }
 
 /**
- * Revoke a certificate on the smart contract (issuer or admin).
+ * Revoke a certificate on the smart contract (Revocation Officer only).
  */
 export async function revokeCertificate(
     certificateId: bigint | number,

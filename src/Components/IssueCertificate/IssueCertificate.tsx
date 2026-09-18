@@ -94,7 +94,6 @@ const IssueCertificate = (props: Props) => {
         try {
             setLoading(true);
 
-            // Verify if the target holder address is registered
             const holderProfile = await fetchUserProfile(holderAddress.trim());
             if (holderProfile.role === UserRole.Unregistered || !holderProfile.active) {
                 setStatusMessage({
@@ -104,10 +103,8 @@ const IssueCertificate = (props: Props) => {
                 return;
             }
 
-            // Automatically compute issueDate as current Unix timestamp (in seconds)
             const issueDate = Math.floor(Date.now() / 1000);
 
-            // Convert selected expiry date string (YYYY-MM-DD) to Unix timestamp (in seconds), or 0 if empty
             const expiryTimestamp = expiryDate ? Math.floor(new Date(expiryDate).getTime() / 1000) : 0;
 
             const typeLabel = CERTIFICATE_TYPE_LABELS[certificateType as CertificateType] || 'Seminar';
