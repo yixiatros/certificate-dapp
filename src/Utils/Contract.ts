@@ -44,7 +44,7 @@ export interface CertificateData {
     revocationReason: string;
 }
 
-export interface User {
+export interface UserData {
     userAddress: string;
     name: string;
     role: bigint;
@@ -245,7 +245,7 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
 /**
 * Gell all users (admin only).
 */
-export async function getAllUsers(): Promise<User[]> {
+export async function getAllUsers(): Promise<UserData[]> {
     ensureValidContractAddress();
     const provider = new ethers.BrowserProvider(window.ethereum as any);
     const signer = await provider.getSigner();
@@ -253,7 +253,7 @@ export async function getAllUsers(): Promise<User[]> {
 
     const rawUsers = await contract.getAllUsers();
 
-    const users: User[] = rawUsers.map((user: any) => ({
+    const users: UserData[] = rawUsers.map((user: any) => ({
         userAddress: user.userAddress,
         name: user.name,
         role: user.role,

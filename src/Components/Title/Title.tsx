@@ -7,7 +7,7 @@ type Props = {
 
 function Title({ title, subtitle }: Props) {
   return (
-    <div className="w-full lg:w-6/12 xl:w-4/12 px-3">
+    <div className="w-full w-full">
         <div className="group relative mb-6 overflow-hidden rounded-2xl border border-primary/20 bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl xl:mb-0">
             {/* Accent */}
             <div className="absolute left-0 top-0 h-full w-1 bg-primary transition-all duration-300 group-hover:w-2" />

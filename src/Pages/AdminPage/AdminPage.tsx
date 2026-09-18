@@ -4,26 +4,30 @@ import Title from "../../Components/Title/Title";
 import Dashboard from "../../Components/Dashboard/Dashboard";
 import { getAllUsers, getAllCertificates } from "../../Utils/Contract";
 import { useEffect, useState } from 'react';
+import { Link } from "react-router/internal/react-server-client";
 
 interface Props { }
 
 const AdminPage = (props: Props) => {
 
-    const [userCount, setUserCount] = useState<number>(0);
-    const [certCount, setCertCount] = useState<number>(0);
+  const [userCount, setUserCount] = useState<number>(0);
+  const [activeCertCount, setActiveCertCount] = useState<number>(0);
+  const [revokedCertCount, setRevokedCertCount] = useState<number>(0);
 
-    useEffect(() => {
-        // Fetch data asynchronously when the component loads
-        const fetchData = async () => {
-            const users = await getAllUsers();
-            const certs = await getAllCertificates();
+  useEffect(() => {
+    // Fetch data asynchronously when the component loads
+    const fetchData = async () => {
+      const users = await getAllUsers();
+      const activeCerts = (await getAllCertificates()).filter(cert => cert.status === "Valid");
+      const revokedCerts = (await getAllCertificates()).filter(cert => cert.status === "Revoked");
 
-            setUserCount(users.length);
-            setCertCount(certs.length);
-        };
+      setUserCount(users.length);
+      setActiveCertCount(activeCerts.length);
+      setRevokedCertCount(revokedCerts.length);
+    };
 
-        fetchData();
-    }, []);
+    fetchData();
+  }, []);
 
 
 
@@ -33,11 +37,24 @@ const AdminPage = (props: Props) => {
       <Sidebar />
 
       <Dashboard>
-              <Title title="Users" subtitle={userCount.toString()} />
-              <Title title="Active Certificates" subtitle={certCount.toString()}/>
-        <Title title="Revoked Certificates" subtitle="5" />
-      </Dashboard>
+        <Link to="Users" className="flex-1 mr-4">
+          <Title title="Users" subtitle={userCount.toString()} />
+        </Link>
 
+        <div className="flex-1 mr-4">
+          <Title
+            title="Active Certificates"
+            subtitle={activeCertCount.toString()}
+          />
+        </div>
+
+        <div className="flex-1">
+          <Title
+            title="Revoked Certificates"
+            subtitle={revokedCertCount.toString()}
+          />
+        </div>
+      </Dashboard>
     </div>
   )
 }

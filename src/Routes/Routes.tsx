@@ -13,6 +13,7 @@ import IssuerCertificates from "../Components/IssuerCertificates/IssuerCertifica
 import IssuerPage from "../Pages/IssuerPage/IssuerPage";
 import HolderPage from "../Pages/HolderPage/HolderPage";
 import RevokeCertificate from "../Components/RevokeCertificate/RevokeCertificate";
+import Users from "../Components/Users/Users";
 
 export const router = createBrowserRouter([
     {
@@ -38,7 +39,8 @@ export const router = createBrowserRouter([
                     { index: true, element: <Navigate to="Admin Profile" replace /> },
                     { path: "Admin Profile", element: <AdminProfile /> },
                     { path: "Register User", element: <AdminRegisterUser /> },
-                    { path: "Issue Certificate", element: <IssueCertificate /> }
+                    { path: "Issue Certificate", element: <IssueCertificate /> },
+                    { path: "Users", element: <Users /> }
                 ]
             },
             { path: "Issuer Dashboard", element: (
