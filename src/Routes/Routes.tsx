@@ -42,7 +42,8 @@ export const router = createBrowserRouter([
                     { index: true, element: <Navigate to="Admin Profile" replace /> },
                     { path: "Admin Profile", element: <AdminProfile /> },
                     { path: "Register User", element: <AdminRegisterUser /> },
-                    { path: "Users", element: <Users /> }
+                    { path: "Users", element: <Users /> },
+                    { path: "Certificates", element: <AllCertificates /> }
                 ]
             },
             {

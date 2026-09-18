@@ -14,7 +14,7 @@ const AdminDashboard = ({ children }: Props) => {
         <div className="relative pt-20 pb-32 bg-text-secondary-500">
           <div className="px-4 md:px-6 mx-auto w-full">
             <div className="divide-y divide-primary">
-              { profile?.role === UserRole.Admin && (
+              { (profile?.role === UserRole.Admin || profile?.role === UserRole.Auditor)  && (
                 <div className="justify-center flex flex-wrap">
                   {children}
                 </div>

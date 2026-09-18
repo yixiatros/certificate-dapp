@@ -41,19 +41,19 @@ const AdminPage = (props: Props) => {
           <Title title="Users" subtitle={userCount.toString()} />
         </Link>
 
-        <div className="flex-1 mr-4">
+        <Link to="Certificates" className="flex-1 mr-4">
           <Title
             title="Active Certificates"
             subtitle={activeCertCount.toString()}
           />
-        </div>
+        </Link>
 
-        <div className="flex-1">
+        <Link to="Certificates" className="flex-1 mr-4">
           <Title
             title="Revoked Certificates"
             subtitle={revokedCertCount.toString()}
           />
-        </div>
+        </Link>
       </Dashboard>
     </div>
   )
