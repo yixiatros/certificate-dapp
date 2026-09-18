@@ -14,6 +14,7 @@ import IssuerPage from "../Pages/IssuerPage/IssuerPage";
 import HolderPage from "../Pages/HolderPage/HolderPage";
 import RevokeCertificate from "../Components/RevokeCertificate/RevokeCertificate";
 import Users from "../Components/Users/Users";
+import VerifyCertificate from "../Components/VerifyCertificate/VerifyCertificate";
 
 export const router = createBrowserRouter([
     {
@@ -59,6 +60,13 @@ export const router = createBrowserRouter([
                 path: "Revoke Certificate", element: (
                     <ProtectedRoute allowedRoles={[UserRole.RevocationOfficer]}>
                         <RevokeCertificate />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "Verify Certificate", element: (
+                    <ProtectedRoute allowedRoles={[UserRole.Verifier]}>
+                        <VerifyCertificate />
                     </ProtectedRoute>
                 )
             }

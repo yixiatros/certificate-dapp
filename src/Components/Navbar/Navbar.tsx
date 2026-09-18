@@ -45,6 +45,11 @@ const Navbar = () => {
                 My Certificates
               </Link>
             )}
+            {profile?.role === UserRole.Verifier && (
+              <Link to="/Verify certificate" className="text-text hover:text-darkBlue">
+                Verify Certificate
+              </Link>
+            )}
             {profile?.role === UserRole.RevocationOfficer && (
               <Link to="Revoke Certificate" className='text-text hover:text-darkBlue' >
                 Revoke Certificate

@@ -13,7 +13,9 @@ export const ERGASIA_ABI = [
     "function certificates(uint256) view returns (uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)",
     "function revokeCertificate(uint256 _certificateId, string _revocationReason) public",
     "function getAllUsers() view returns (tuple(address userAddress, string name, uint8 role, bool active)[])",
-    "function getAllCertificates() view returns (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)[])"
+    "function getAllCertificates() view returns (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)[])",
+    "function verifyCertificateByHash(string _fileHash) view returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))",
+    "function verifyCertificateById(uint256 _certificateId) view returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))"
 ];
 
 // Configurable contract address (can be set via environment variable or default fallback)
@@ -187,6 +189,54 @@ export async function revokeCertificate(
     const receipt = await tx.wait();
     return receipt;
 }
+
+
+
+    /**
+     * Verify a certificate by Hash on the smart contract (verifier or admin).
+     */
+    export async function verifyCertificateByHash(certificateHash: string): Promise<CertificateData | null> {
+        ensureValidContractAddress();
+
+        if (typeof window === 'undefined' || !window.ethereum) {
+            throw new Error('Web3 wallet (MetaMask) is not available.');
+        }
+
+        const provider = new ethers.BrowserProvider(window.ethereum as any);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS,ERGASIA_ABI,signer);
+
+        try {
+            const certificateData = await contract.verifyCertificateByHash(certificateHash);
+            return certificateData;
+        } catch (error) {
+            console.error('verifyCertificateByHash error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Verify a certificate by ID on the smart contract (verifier or admin).
+     */
+    export async function verifyCertificateById(certificateId: bigint | number): Promise<CertificateData | null> {
+        ensureValidContractAddress();
+
+        if (typeof window === 'undefined' || !window.ethereum) {
+            throw new Error('Web3 wallet (MetaMask) is not available.');
+        }
+
+        const provider = new ethers.BrowserProvider(window.ethereum as any);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS,ERGASIA_ABI,signer);
+
+        try {
+            const certificateData = await contract.verifyCertificateById(certificateId);
+            return certificateData;
+        } catch (error) {
+            console.error('verifyCertificateById error:', error);
+            throw error;
+        }
+    }
 
 
 
