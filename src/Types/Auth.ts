@@ -5,6 +5,7 @@ export enum UserRole {
     Holder = 3,
     RevocationOfficer = 4,
     Auditor = 5,
+    Verifier = 6,
 }
 
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
@@ -14,6 +15,7 @@ export const USER_ROLE_LABELS: Record<UserRole, string> = {
     [UserRole.Holder]: 'Holder',
     [UserRole.RevocationOfficer]: 'Revocation Officer',
     [UserRole.Auditor]: 'Auditor',
+    [UserRole.Verifier]: 'Verifier',
 };
 
 export interface UserProfile {

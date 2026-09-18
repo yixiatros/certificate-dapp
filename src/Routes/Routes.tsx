@@ -31,7 +31,8 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 )
             },
-            { path: "Admin Dashboard", element: (
+            {
+                path: "Admin Dashboard", element: (
                     <ProtectedRoute requireAdmin>
                         <AdminPage />
                     </ProtectedRoute>
@@ -39,11 +40,11 @@ export const router = createBrowserRouter([
                     { index: true, element: <Navigate to="Admin Profile" replace /> },
                     { path: "Admin Profile", element: <AdminProfile /> },
                     { path: "Register User", element: <AdminRegisterUser /> },
-                    { path: "Issue Certificate", element: <IssueCertificate /> },
                     { path: "Users", element: <Users /> }
                 ]
             },
-            { path: "Issuer Dashboard", element: (
+            {
+                path: "Issuer Dashboard", element: (
                     <ProtectedRoute allowedRoles={[UserRole.Issuer]}>
                         <IssuerPage />
                     </ProtectedRoute>
@@ -54,11 +55,13 @@ export const router = createBrowserRouter([
                     { path: "Issue Certificate", element: <IssueCertificate /> }
                 ]
             },
-            { path: "Revoke Certificate", element: (
-                <ProtectedRoute allowedRoles={[UserRole.RevocationOfficer]}>
-                    <RevokeCertificate /> 
-                </ProtectedRoute>
-            )}
+            {
+                path: "Revoke Certificate", element: (
+                    <ProtectedRoute allowedRoles={[UserRole.RevocationOfficer]}>
+                        <RevokeCertificate />
+                    </ProtectedRoute>
+                )
+            }
         ]
     }
 ])

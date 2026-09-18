@@ -4,16 +4,16 @@ import { UserRole, type UserProfile } from '../Types/Auth';
 // Standard contract ABI for the user and admin functions based on your Smart Contract
 export const ERGASIA_ABI = [
     "function admin() view returns (address)",
-    "function users(address) view returns (address userAddress, string name, uint256 role, bool active)",
+    "function users(address) view returns (address userAddress, string name, uint8 role, bool active)",
     "function issuers(address) view returns (address issuerAddress, string name, bool active)",
-    "function registerUser(address _userAddress, string _name, uint256 _role) public",
+    "function registerUser(address _userAddress, string _name, uint8 _role) public",
     "function issueCertificate(string _certificateType, address _holder, string _fileHash, uint256 _issueDate, uint256 _expiryDate) public",
     "function getHolderCertificates(address _holder) view returns (uint256[])",
     "function getIssuerCertificates(address _issuer) view returns (uint256[])",
-    "function certificates(uint256) view returns (uint256 id, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool isRevoked, string revocationReason)",
-    "function getAllUsers() view returns (tuple(address userAddress, string name, uint256 role, bool active)[])",
+    "function certificates(uint256) view returns (uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)",
+    "function revokeCertificate(uint256 _certificateId, string _revocationReason) public",
+    "function getAllUsers() view returns (tuple(address userAddress, string name, uint8 role, bool active)[])",
     "function getAllCertificates() view returns (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)[])"
-
 ];
 
 // Configurable contract address (can be set via environment variable or default fallback)
@@ -101,15 +101,15 @@ export async function getCertificateDetails(certificateId: bigint | number): Pro
     try {
         const cert = await contract.certificates(certificateId);
         return {
-            id: BigInt(cert.id),
+            id: BigInt(cert.certificateId ?? cert.id ?? 0),
             certificateType: cert.certificateType,
             issuer: cert.issuer,
             holder: cert.holder,
             fileHash: cert.fileHash,
-            issueDate: BigInt(cert.issueDate),
-            expiryDate: BigInt(cert.expiryDate),
+            issueDate: BigInt(cert.issueDate ?? 0),
+            expiryDate: BigInt(cert.expiryDate ?? 0),
             status: cert.status,
-            isRevoked: cert.isRevoked,
+            isRevoked: cert.revoked ?? cert.isRevoked ?? false,
             revocationReason: cert.revocationReason,
         };
     } catch (err) {
@@ -166,6 +166,28 @@ export async function issueCertificate(
     const receipt = await tx.wait();
     return receipt;
 }
+
+/**
+ * Revoke a certificate on the smart contract (issuer or admin).
+ */
+export async function revokeCertificate(
+    certificateId: bigint | number,
+    revocationReason: string
+): Promise<ethers.ContractTransactionReceipt | null> {
+    ensureValidContractAddress();
+    if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Web3 wallet (MetaMask) is not available.');
+    }
+
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
+
+    const tx = await contract.revokeCertificate(certificateId, revocationReason);
+    const receipt = await tx.wait();
+    return receipt;
+}
+
 
 
 /**

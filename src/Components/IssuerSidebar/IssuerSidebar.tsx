@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaHome, FaAddressCard, FaCertificate } from 'react-icons/fa'
+import { FaHome, FaAddressCard, FaCertificate, FaBan } from 'react-icons/fa'
 import { Link } from 'react-router'
 
 type Props = {}
@@ -28,6 +28,11 @@ const IssuerSidebar = (props: Props) => {
               <Link to="Issue Certificate" className="md:min-w-full text-text-secondary-500 text-medium uppercase font-bold flex items-center pt-1 pb-4 no-underline">
                 <FaAddressCard />
                 <h6 className='ml-3'>Issue Certificate</h6>
+              </Link>
+
+              <Link to="Revoke Certificate" className="md:min-w-full text-text-secondary-500 text-medium uppercase font-bold flex items-center pt-1 pb-4 no-underline text-error hover:opacity-80">
+                <FaBan />
+                <h6 className='ml-3'>Revoke Certificate</h6>
               </Link>
             </div>
           </div>
