@@ -8,7 +8,7 @@ const AdminProfile = (props: Props) => {
   const { address, profile, expiresAt } = useAuth();
 
   return (
-    <div className="max-w-xl mx-auto my-8 text-text shadow-lg">
+    <div className="w-full max-w-xl mx-auto my-8 text-text shadow-lg">
       <h2 className="text-xl font-bold mb-6 text-center text-text">Profile Details</h2>
       <div className="divide-y divide-primary">
         <div className="px-6 py-4">

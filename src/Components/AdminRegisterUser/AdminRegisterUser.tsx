@@ -58,7 +58,7 @@ const AdminRegisterUser: React.FC = () => {
     };
 
   return (
-    <div className="max-w-xl mx-auto my-8 text-text shadow-lg">
+    <div className="w-full max-w-xl mx-auto my-8 text-text shadow-lg">
         <h2 className="text-xl font-bold mb-6 text-center text-text">Register New User</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>

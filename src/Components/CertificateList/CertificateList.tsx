@@ -87,9 +87,9 @@ const CertificateList: React.FC<CertificateListProps> = ({
     }, [certificates, searchTerm, searchByIdOnly]);
 
     return (
-        <div className="max-w-4xl mx-auto my-8 p-6 bg-transparent rounded-lg shadow-lg text-text">
+        <div className="w-full max-w-xl mx-auto my-8 text-text shadow-lg">
             {title && (
-                <h2 className="text-2xl font-bold mb-6 text-center border-b border-primary/30 pb-4">
+                <h2 className="text-xl font-bold mb-6 text-center text-text border-b border-primary/30 pb-4">
                     {title}
                 </h2>
             )}

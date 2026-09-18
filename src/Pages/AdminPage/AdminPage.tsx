@@ -1,5 +1,5 @@
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import Sidebar from "../../Components/AdminSidebar/AdminSidebar";
+import AdminSidebar from "../../Components/AdminSidebar/AdminSidebar";
 import Title from "../../Components/Title/Title";
 import Dashboard from "../../Components/Dashboard/Dashboard";
 import { getAllUsers, getAllCertificates } from "../../Utils/Contract";
@@ -34,7 +34,7 @@ const AdminPage = (props: Props) => {
 
   return (
     <div className="relative text-left flex h-full w-full overflow-hidden">
-      <Sidebar />
+      <AdminSidebar />
 
       <Dashboard>
         <Link to="Users" className="flex-1 mr-4">

@@ -14,6 +14,8 @@ import IssuerPage from "../Pages/IssuerPage/IssuerPage";
 import HolderPage from "../Pages/HolderPage/HolderPage";
 import RevokeCertificate from "../Components/RevokeCertificate/RevokeCertificate";
 import Users from "../Components/Users/Users";
+import AuditorPage from "../Pages/AuditorPage/AuditorPage";
+import AllCertificates from "../Components/AllCertificates/AllCertificates";
 
 export const router = createBrowserRouter([
     {
@@ -61,6 +63,18 @@ export const router = createBrowserRouter([
                         <RevokeCertificate />
                     </ProtectedRoute>
                 )
+            },
+            {
+                path: "Auditor Dashboard", element: (
+                    <ProtectedRoute allowedRoles={[UserRole.Auditor]}>
+                        <AuditorPage />
+                    </ProtectedRoute>
+                ), children: [
+                    { index: true, element: <Navigate to="Profile" replace /> },
+                    { path: "Profile", element: <AdminProfile /> },
+                    { path: "Users", element: <Users /> },
+                    { path: "Certificates", element: <AllCertificates /> }
+                ]
             }
         ]
     }

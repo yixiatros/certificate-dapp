@@ -119,7 +119,7 @@ export async function getCertificateDetails(certificateId: bigint | number): Pro
 }
 
 /**
- * Register a new user in the smart contract (admin only).
+ * Register a new user (admin only).
  */
 export async function registerUser(userAddress: string, name: string, role: number): Promise<ethers.ContractTransactionReceipt | null> {
     ensureValidContractAddress();
@@ -138,7 +138,7 @@ export async function registerUser(userAddress: string, name: string, role: numb
 }
 
 /**
- * Issue a certificate on the smart contract (issuer only).
+ * Issue a certificate (issuer only).
  */
 export async function issueCertificate(
     certificateType: string,
@@ -168,7 +168,7 @@ export async function issueCertificate(
 }
 
 /**
- * Revoke a certificate on the smart contract (Revocation Officer only).
+ * Revoke a certificate (Revocation Officer only).
  */
 export async function revokeCertificate(
     certificateId: bigint | number,
@@ -191,7 +191,7 @@ export async function revokeCertificate(
 
 
 /**
- * Fetch role and user info for a given address directly from the smart contract.
+ * Fetch role and user info for a given address from the smart contract.
  */
 export async function fetchUserProfile(userAddress: string): Promise<UserProfile> {
     if (!userAddress) {
@@ -238,7 +238,6 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
             };
         }
 
-        // Address is not in mapping, but check if it's the contract creator/admin
         if (isAdmin) {
             return {
                 address: userAddress,
@@ -265,7 +264,7 @@ export async function fetchUserProfile(userAddress: string): Promise<UserProfile
 
 
 /**
-* Gell all users (admin only).
+* Gell all users (admin and auditor only).
 */
 export async function getAllUsers(): Promise<UserData[]> {
     ensureValidContractAddress();
@@ -287,7 +286,7 @@ export async function getAllUsers(): Promise<UserData[]> {
 
 
 /**
-* Gell all certificates (admin only).
+* Gell all certificate data.
 */
 export async function getAllCertificates(): Promise<CertificateData[]> {
     ensureValidContractAddress();
@@ -311,4 +310,20 @@ export async function getAllCertificates(): Promise<CertificateData[]> {
     }));
 
     return certificates;
+}
+
+/**
+* Gell all certificate IDs.
+ */
+export async function getAllCertificateIds(): Promise<bigint[]> {
+    ensureValidContractAddress();
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
+
+    const rawCertificates = await contract.getAllCertificates();
+
+    const ids: bigint[] = rawCertificates.map((cert: any) => BigInt(cert.certificateId));
+
+    return ids;
 }
