@@ -26,13 +26,13 @@ const CertificateCard: React.FC<CertificateCardProps> = ({
                     <span className="text-xs font-semibold px-2.5 py-1 rounded bg-lightBlue/20 text-lightBlue border border-lightBlue/30">
                         ID: #{cert.id.toString()}
                     </span>
-                    <span
-                        className={`text-xs font-semibold px-2.5 py-1 rounded ${cert.isRevoked
-                                ? 'bg-error/20 text-error border border-error/30'
-                                : 'bg-success/20 text-success border border-success/30'
-                            }`}
-                    >
-                        {cert.isRevoked ? 'Revoked' : cert.status || 'Valid'}
+                    <span className={
+                        `text-xs font-semibold px-2.5 py-1 rounded border ${
+                            cert.isRevoked ? 'bg-error/20 text-error border-error/30' 
+                            : cert.status === "Expired" ? 'bg-warning/20 text-warning border-warning/30' 
+                            : 'bg-success/20 text-success border-success/30'}`
+                    }>
+                        {cert.isRevoked ? 'Revoked' : cert.status === "Expired" ? 'Expired' : cert.status || 'Valid'}
                     </span>
                 </div>
 
