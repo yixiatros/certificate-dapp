@@ -4,18 +4,18 @@ import SignIn from '../SignIn/SignIn'
 import { useState } from 'react';
 import Modal from '../Modal/Modal';
 import { useAuth } from '../../Context/AuthContext';
+import { USER_ROLE_LABELS, UserRole } from '../../Types/Auth';
 
-interface Props { }
-
-const Navbar = (props: Props) => {
+const Navbar = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const { isAuthenticated, address, logout } = useAuth();
+  const { isAuthenticated, address, profile, logout } = useAuth();
 
   const onClickSignIn = () => {
     setModalOpen(true);
   };
 
   const shortAddress = address ? `${address.slice(0, 6)}…${address.slice(-4)}` : '';
+  const roleLabel = profile ? USER_ROLE_LABELS[profile.role] : 'Connecting...';
 
   return (
     <nav className="relative container mx-auto p-6">
@@ -25,25 +25,60 @@ const Navbar = (props: Props) => {
             <img src={logo} alt="Logo" />
           </Link>
           <div className="hidden font-bold lg:flex">
-            <Link to="/" className="text-white hover:text-darkBlue">
+            <Link to="/" className="text-text hover:text-darkBlue">
               HomePage
             </Link>
+          </div>
+          <div className="hidden font-bold lg:flex">
+            { profile?.role === UserRole.Admin && (
+              <Link to="/Admin Dashboard" className="text-text hover:text-darkBlue">
+                Dashboard
+              </Link>
+            )}
+            { profile?.role === UserRole.Issuer && (
+              <Link to="/Issuer Dashboard" className="text-text hover:text-darkBlue">
+                Dashboard
+              </Link>
+            )}
+            { profile?.role === UserRole.Holder && (
+              <Link to="/My Certificates" className="text-text hover:text-darkBlue">
+                My Certificates
+              </Link>
+            )}
+            {profile?.role === UserRole.RevocationOfficer && (
+              <Link to="Revoke Certificate" className='text-text hover:text-darkBlue' >
+                Revoke Certificate
+              </Link>
+            )}
+            {profile?.role === UserRole.Verifier && (
+              <Link to="/Verify certificate" className="text-text hover:text-darkBlue">
+                Verify Certificate
+              </Link>
+            )}
+            { profile?.role === UserRole.Auditor && (
+              <Link to="Auditor Dashboard" className='text-text hover:text-darkBlue'>
+                Dashboard
+              </Link>
+            )}
           </div>
         </div>
         <div className="hidden lg:flex items-center space-x-6 text-back">
           {isAuthenticated ? (
-            <>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-lightBlue/20 px-3 py-1 text-xs font-semibold text-lightBlue border border-lightBlue/40">
+                {roleLabel} {profile?.name ? `(${profile.name})` : ''}
+              </span>
               <span className="font-mono text-sm">{shortAddress}</span>
               <button type="button" onClick={logout} className="text-text-secondary cursor-pointer hover:text-darkBlue">
                 Log out
               </button>
-            </>
+            </div>
           ) : (
             <>
               <Link to="/SignIn" className="cursor-pointer hover:text-darkBlue">
                 SignIn
               </Link>
-              <button type="button" onClick={onClickSignIn} className="px-8 py-3 font-bold rounded text-white bg-lightBlue hover:opacity-70">
+              <button type="button" onClick={onClickSignIn} className="px-8 py-3 font-bold rounded text-text bg-lightBlue hover:opacity-70">
                 Login
               </button>
             </>

@@ -86,7 +86,14 @@ const SignIn = (props: Props) => {
           and acknowledge our <Link to="/Privacy Policy" className='text-text text-fg-brand hover:underline'>privacy policy</Link>.
         </p>
 
-        {error && <p className="error-text">{error}</p>}
+        {error && (
+          <div className="flex items-center gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+            <svg className="h-5 w-5 shrink-0 text-red-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 6V10M10 14H10.01M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
       </div>
     </div>
   )
