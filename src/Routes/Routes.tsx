@@ -16,6 +16,8 @@ import RevokeCertificate from "../Components/RevokeCertificate/RevokeCertificate
 import Users from "../Components/Users/Users";
 import AuditorPage from "../Pages/AuditorPage/AuditorPage";
 import AllCertificates from "../Components/AllCertificates/AllCertificates";
+import VerifyCertificate from "../Components/VerifyCertificate/VerifyCertificate";
+
 
 export const router = createBrowserRouter([
     {
@@ -25,16 +27,14 @@ export const router = createBrowserRouter([
             { path: "", element: <HomePage /> },
             { path: "SignIn", element: <SigninPage /> },
             { path: "Privacy Policy", element: <PrivacyPolicy /> },
-            {
-                path: "My Certificates",
+            { path: "My Certificates",
                 element: (
                     <ProtectedRoute allowedRoles={[UserRole.Holder]}>
                         <HolderPage />
                     </ProtectedRoute>
                 )
             },
-            {
-                path: "Admin Dashboard", element: (
+            { path: "Admin Dashboard", element: (
                     <ProtectedRoute requireAdmin>
                         <AdminPage />
                     </ProtectedRoute>
@@ -46,8 +46,7 @@ export const router = createBrowserRouter([
                     { path: "Certificates", element: <AllCertificates /> }
                 ]
             },
-            {
-                path: "Issuer Dashboard", element: (
+            { path: "Issuer Dashboard", element: (
                     <ProtectedRoute allowedRoles={[UserRole.Issuer]}>
                         <IssuerPage />
                     </ProtectedRoute>
@@ -58,15 +57,18 @@ export const router = createBrowserRouter([
                     { path: "Issue Certificate", element: <IssueCertificate /> }
                 ]
             },
-            {
-                path: "Revoke Certificate", element: (
+            { path: "Revoke Certificate", element: (
                     <ProtectedRoute allowedRoles={[UserRole.RevocationOfficer]}>
                         <RevokeCertificate />
                     </ProtectedRoute>
                 )
             },
-            {
-                path: "Auditor Dashboard", element: (
+            { path: "Verify Certificate", element: (
+                    <ProtectedRoute allowedRoles={[UserRole.Verifier]}>
+                        <VerifyCertificate />
+                    </ProtectedRoute>
+            ),
+            { path: "Auditor Dashboard", element: (
                     <ProtectedRoute allowedRoles={[UserRole.Auditor]}>
                         <AuditorPage />
                     </ProtectedRoute>
