@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
                     <ProtectedRoute allowedRoles={[UserRole.Verifier]}>
                         <VerifyCertificate />
                     </ProtectedRoute>
-            ),
+            )},
             { path: "Auditor Dashboard", element: (
                     <ProtectedRoute allowedRoles={[UserRole.Auditor]}>
                         <AuditorPage />

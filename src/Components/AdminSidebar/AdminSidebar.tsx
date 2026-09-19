@@ -1,4 +1,4 @@
-import { FaHome, FaUser, FaUserPlus } from 'react-icons/fa'
+import { FaCertificate, FaHome, FaUserPlus, FaUsers } from 'react-icons/fa'
 import { Link } from 'react-router'
 import Sidebar from '../Sidebar/Sidebar'
 
@@ -18,8 +18,13 @@ const AdminSidebar = (props: Props) => {
       </Link>
       
       <Link to="Users" className="md:min-w-full text-text-secondary-500 text-medium uppercase font-bold flex items-center pt-1 pb-4 no-underline">
-        <FaUser />
+        <FaUsers />
         <h6 className='ml-3'>Users</h6>
+      </Link>
+
+      <Link to="Certificates" className="md:min-w-full text-text-secondary-500 text-medium uppercase font-bold flex items-center pt-1 pb-4 no-underline">
+        <FaCertificate />
+        <h6 className='ml-3'>Certificates</h6>
       </Link>
     </Sidebar>
   )

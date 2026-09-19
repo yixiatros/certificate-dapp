@@ -1,7 +1,7 @@
 import React from 'react'
 import Sidebar from '../Sidebar/Sidebar'
 import { Link } from 'react-router'
-import { FaCertificate, FaHome, FaUser } from 'react-icons/fa'
+import { FaCertificate, FaHome, FaUsers } from 'react-icons/fa'
 
 type Props = {}
 
@@ -14,7 +14,7 @@ const AuditorSidebar = (props: Props) => {
         </Link>
 
         <Link to="Users" className="md:min-w-full text-text-secondary-500 text-medium uppercase font-bold flex items-center pt-1 pb-4 no-underline">
-            <FaUser />
+            <FaUsers />
             <h6 className='ml-3'>Users</h6>
         </Link>
 
