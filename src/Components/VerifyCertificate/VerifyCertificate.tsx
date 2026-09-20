@@ -123,6 +123,15 @@ const VerifyCertificate = (props: Props) => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
           <div className="relative flex h-10 rounded overflow-hidden border border-primary">
+
+            <div className="pointer-events-none absolute left-1/3 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-8 h-8 rounded-full border border-secondary bg-surface text-xs font-bold text-text-secondary shadow">
+              or
+            </div>
+            <div className="pointer-events-none absolute left-2/3 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-8 h-8 rounded-full border border-secondary bg-surface text-xs font-bold text-text-secondary shadow">
+              or
+            </div>
+
+
             <button
               type="button"
               onClick={() => handleInputModeChange('pdf')}
@@ -144,6 +153,7 @@ const VerifyCertificate = (props: Props) => {
             >
               Certificate ID
             </button>
+
           </div>
 
           {inputMode === 'pdf' && (
