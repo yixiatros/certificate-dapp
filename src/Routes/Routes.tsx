@@ -17,6 +17,7 @@ import Users from "../Components/Users/Users";
 import AuditorPage from "../Pages/AuditorPage/AuditorPage";
 import AllCertificates from "../Components/AllCertificates/AllCertificates";
 import VerifyCertificate from "../Components/VerifyCertificate/VerifyCertificate";
+import EventLog from "../Components/EventLog/EventLog";
 
 
 export const router = createBrowserRouter([
@@ -76,7 +77,8 @@ export const router = createBrowserRouter([
                     { index: true, element: <Navigate to="Profile" replace /> },
                     { path: "Profile", element: <AdminProfile /> },
                     { path: "Users", element: <Users /> },
-                    { path: "Certificates", element: <AllCertificates /> }
+                    { path: "Certificates", element: <AllCertificates /> },
+                    { path: "Event Log", element: <EventLog /> }
                 ]
             }
         ]
