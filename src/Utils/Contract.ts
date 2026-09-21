@@ -192,51 +192,51 @@ export async function revokeCertificate(
 
 
 
-    /**
-     * Verify a certificate by Hash on the smart contract (verifier or admin).
-     */
-    export async function verifyCertificateByHash(certificateHash: string): Promise<CertificateData | null> {
-        ensureValidContractAddress();
+/**
+ * Verify a certificate by Hash on the smart contract (verifier or admin).
+ */
+export async function verifyCertificateByHash(certificateHash: string): Promise<CertificateData | null> {
+    ensureValidContractAddress();
 
-        if (typeof window === 'undefined' || !window.ethereum) {
-            throw new Error('Web3 wallet (MetaMask) is not available.');
-        }
-
-        const provider = new ethers.BrowserProvider(window.ethereum as any);
-        const signer = await provider.getSigner();
-        const contract = new ethers.Contract(CONTRACT_ADDRESS,ERGASIA_ABI,signer);
-
-        try {
-            const certificateData = await contract.verifyCertificateByHash(certificateHash);
-            return certificateData;
-        } catch (error) {
-            console.error('verifyCertificateByHash error:', error);
-            throw error;
-        }
+    if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Web3 wallet (MetaMask) is not available.');
     }
 
-    /**
-     * Verify a certificate by ID on the smart contract (verifier or admin).
-     */
-    export async function verifyCertificateById(certificateId: bigint | number): Promise<CertificateData | null> {
-        ensureValidContractAddress();
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
 
-        if (typeof window === 'undefined' || !window.ethereum) {
-            throw new Error('Web3 wallet (MetaMask) is not available.');
-        }
-
-        const provider = new ethers.BrowserProvider(window.ethereum as any);
-        const signer = await provider.getSigner();
-        const contract = new ethers.Contract(CONTRACT_ADDRESS,ERGASIA_ABI,signer);
-
-        try {
-            const certificateData = await contract.verifyCertificateById(certificateId);
-            return certificateData;
-        } catch (error) {
-            console.error('verifyCertificateById error:', error);
-            throw error;
-        }
+    try {
+        const certificateData = await contract.verifyCertificateByHash(certificateHash);
+        return certificateData;
+    } catch (error) {
+        console.error('verifyCertificateByHash error:', error);
+        throw error;
     }
+}
+
+/**
+ * Verify a certificate by ID on the smart contract (verifier or admin).
+ */
+export async function verifyCertificateById(certificateId: bigint | number): Promise<CertificateData | null> {
+    ensureValidContractAddress();
+
+    if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Web3 wallet (MetaMask) is not available.');
+    }
+
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
+
+    try {
+        const certificateData = await contract.verifyCertificateById(certificateId);
+        return certificateData;
+    } catch (error) {
+        console.error('verifyCertificateById error:', error);
+        throw error;
+    }
+}
 
 
 
@@ -364,7 +364,7 @@ export async function getAllCertificates(): Promise<CertificateData[]> {
 
 /**
 * Gell all certificate IDs.
- */
+*/
 export async function getAllCertificateIds(): Promise<bigint[]> {
     ensureValidContractAddress();
     const provider = new ethers.BrowserProvider(window.ethereum as any);
@@ -376,4 +376,108 @@ export async function getAllCertificateIds(): Promise<bigint[]> {
     const ids: bigint[] = rawCertificates.map((cert: any) => BigInt(cert.certificateId));
 
     return ids;
+}
+
+
+/**
+* Event Log Types
+*/
+export type ContractEventName =
+    | 'UserRegistered'
+    | 'CertificateIssued'
+    | 'CertificateVerified'
+    | 'CertificateRevoked'
+    | 'CertificateExpired';
+
+export interface ContractEvent {
+    eventName: ContractEventName;
+    blockNumber: number;
+    transactionHash: string;
+    args: Record<string, string>;
+    timestamp?: number; // seconds since epoch, populated if available
+}
+
+const EVENT_ABI_FRAGMENTS = [
+    "event UserRegistered(address indexed userAddress, string name, uint8 role)",
+    "event CertificateIssued(uint256 indexed certificateId, address indexed issuer, address indexed holder)",
+    "event CertificateVerified(uint256 indexed certificateId, string indexed fileHash)",
+    "event CertificateRevoked(uint256 indexed certificateId, string reason)",
+    "event CertificateExpired(uint256 certificateId)",
+];
+
+/**
+* Fetch all historical events emitted by the contract.
+*/
+export async function getContractEventLogs(): Promise<ContractEvent[]> {
+    ensureValidContractAddress();
+    if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Web3 wallet (MetaMask) is not available.');
+    }
+
+    const provider = new ethers.BrowserProvider(window.ethereum as any);
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, EVENT_ABI_FRAGMENTS, provider);
+
+    const eventNames: ContractEventName[] = [
+        'UserRegistered',
+        'CertificateIssued',
+        'CertificateVerified',
+        'CertificateRevoked',
+        'CertificateExpired',
+    ];
+
+    const settled = await Promise.allSettled(
+        eventNames.map((name) => contract.queryFilter(contract.filters[name](), 0, 'latest'))
+    );
+
+    const blockTimestampCache: Record<number, number> = {};
+
+    const fetchTimestamp = async (blockNumber: number): Promise<number> => {
+        if (blockTimestampCache[blockNumber] !== undefined) return blockTimestampCache[blockNumber];
+        try {
+            const block = await provider.getBlock(blockNumber);
+            const ts = block?.timestamp ?? 0;
+            blockTimestampCache[blockNumber] = ts;
+            return ts;
+        } catch {
+            return 0;
+        }
+    };
+
+    const rawEvents: ContractEvent[] = [];
+
+    for (let i = 0; i < eventNames.length; i++) {
+        const result = settled[i];
+        if (result.status !== 'fulfilled') continue;
+
+        for (const log of result.value as ethers.EventLog[]) {
+            const args: Record<string, string> = {};
+
+            // Parse named args from the decoded fragment
+            if (log.args && log.fragment?.inputs) {
+                for (const input of log.fragment.inputs) {
+                    const val = log.args[input.name];
+                    args[input.name] = val !== undefined ? val.toString() : '';
+                }
+            }
+
+            rawEvents.push({
+                eventName: eventNames[i],
+                blockNumber: log.blockNumber,
+                transactionHash: log.transactionHash,
+                args,
+            });
+        }
+    }
+
+    const uniqueBlocks = [...new Set(rawEvents.map((e) => e.blockNumber))];
+    await Promise.all(uniqueBlocks.map(fetchTimestamp));
+
+    for (const ev of rawEvents) {
+        ev.timestamp = blockTimestampCache[ev.blockNumber] ?? 0;
+    }
+
+    // Sort newest first
+    rawEvents.sort((a, b) => b.blockNumber - a.blockNumber);
+
+    return rawEvents;
 }
