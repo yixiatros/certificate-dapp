@@ -6,16 +6,16 @@ export const ERGASIA_ABI = [
     "function admin() view returns (address)",
     "function users(address) view returns (address userAddress, string name, uint8 role, bool active)",
     "function issuers(address) view returns (address issuerAddress, string name, bool active)",
-    "function registerUser(address _userAddress, string _name, uint8 _role) public",
-    "function issueCertificate(string _certificateType, address _holder, string _fileHash, uint256 _issueDate, uint256 _expiryDate) public",
-    "function getHolderCertificates(address _holder) view returns (uint256[])",
-    "function getIssuerCertificates(address _issuer) view returns (uint256[])",
+    "function registerUser(address userAddress, string name, uint8 role) public",
+    "function issueCertificate(string certificateType, address holder, string fileHash, uint256 issueDate, uint256 expiryDate) public",
+    "function getHolderCertificates(address holder) view returns (uint256[])",
+    "function getIssuerCertificates(address issuer) view returns (uint256[])",
     "function certificates(uint256) view returns (uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)",
-    "function revokeCertificate(uint256 _certificateId, string _revocationReason) public",
+    "function revokeCertificate(uint256 certificateId, string revocationReason) public",
     "function getAllUsers() view returns (tuple(address userAddress, string name, uint8 role, bool active)[])",
     "function getAllCertificates() view returns (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)[])",
-    "function verifyCertificateByHash(string _fileHash) view returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))",
-    "function verifyCertificateById(uint256 _certificateId) view returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))"
+    "function verifyCertificateByHash(string fileHash) returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))",
+    "function verifyCertificateById(uint256 certificateId) returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))"
 ];
 
 // Configurable contract address (can be set via environment variable or default fallback)
@@ -400,7 +400,7 @@ export interface ContractEvent {
 const EVENT_ABI_FRAGMENTS = [
     "event UserRegistered(address indexed userAddress, string name, uint8 role)",
     "event CertificateIssued(uint256 indexed certificateId, address indexed issuer, address indexed holder)",
-    "event CertificateVerified(uint256 indexed certificateId, string indexed fileHash)",
+    "event CertificateVerified(uint256 indexed certificateId, string fileHash)",
     "event CertificateRevoked(uint256 indexed certificateId, string reason)",
     "event CertificateExpired(uint256 certificateId)",
 ];
