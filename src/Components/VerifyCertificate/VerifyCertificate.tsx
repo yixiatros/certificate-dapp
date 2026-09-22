@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { verifyCertificateByHash, verifyCertificateById, type CertificateData } from '../../Utils/Contract';
+import React, { useState, useRef } from 'react';
+import { 
+  verifyCertificateByHash, 
+  verifyCertificateById, 
+  type CertificateData,
+  type VerificationResult 
+} from '../../Utils/Contract';
+import CertificateCard from '../CertificateCard/CertificateCard';
 
 type Props = {};
 type InputMode = 'pdf' | 'text' | 'id';
@@ -13,19 +19,28 @@ const VerifyCertificate = (props: Props) => {
   const [certificateId, setCertificateId] = useState('');
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [certificate, setCertificate] = useState<CertificateData | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Clear inputs and file element
+  const resetFormFields = () => {
+    setCertificateText('');
+    setPdfFileHash('');
+    setInfoFileHash('');
+    setFileHash('');
+    setCertificateId('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   // Switch modes and sync active hash/ID state
   const handleInputModeChange = (mode: InputMode) => {
     setInputMode(mode);
     setStatusMessage(null);
-
-    if (mode === 'pdf') {
-      setFileHash(pdfFileHash);
-    } else if (mode === 'text') {
-      setFileHash(infoFileHash);
-    } else if (mode === 'id') {
-      setFileHash(''); // Clear file hash when switching to ID verification
-    }
+    setCertificate(null);
+    resetFormFields();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +58,7 @@ const VerifyCertificate = (props: Props) => {
       const buffer = reader.result as ArrayBuffer;
       const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      const hashHex = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
       setPdfFileHash(hashHex);
       setFileHash(hashHex);
     };
@@ -63,14 +78,17 @@ const VerifyCertificate = (props: Props) => {
     const data = encoder.encode(text);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const hashHex = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     setInfoFileHash(hashHex);
     setFileHash(hashHex);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Clear previous message & certificate card before execution
     setStatusMessage(null);
+    setCertificate(null);
 
     if (inputMode === 'id' && !certificateId.trim()) {
       alert("Please enter a certificate ID.");
@@ -87,16 +105,18 @@ const VerifyCertificate = (props: Props) => {
 
     try {
       setLoading(true);
-      let certificateExists: CertificateData | null = null;
+      let result: VerificationResult | null = null;
 
       if (inputMode === 'id') {
         const idAsBigInt = BigInt(certificateId.trim());
-        certificateExists = await verifyCertificateById(idAsBigInt);
+        result = await verifyCertificateById(idAsBigInt);
       } else {
-        certificateExists = await verifyCertificateByHash(fileHash.trim());
+        const cleanHash = fileHash.trim();
+        const formattedHash = cleanHash.startsWith('0x') ? cleanHash : `0x${cleanHash}`;
+        result = await verifyCertificateByHash(formattedHash);
       }
 
-      if (certificateExists == null) {
+      if (result == null) {
         setStatusMessage({
           type: 'error',
           text: 'Certificate not found.',
@@ -104,10 +124,16 @@ const VerifyCertificate = (props: Props) => {
         return;
       }
 
+      setCertificate(result.certificate);
+
       setStatusMessage({
         type: 'success',
-        text: 'Certificate verified successfully!',
+        text: `Certificate verified successfully! Transaction Hash: ${result.txHash}`,
       });
+
+      // Clear input fields after successful verification
+      resetFormFields();
+
     } catch (err: any) {
       console.error('Verify certificate error:', err);
       const errorText = err?.reason || err?.message || 'Failed to verify certificate on smart contract.';
@@ -159,6 +185,7 @@ const VerifyCertificate = (props: Props) => {
           {inputMode === 'pdf' && (
             <div className="mt-4">
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="application/pdf"
                 onChange={handleChange}
@@ -200,7 +227,9 @@ const VerifyCertificate = (props: Props) => {
           {loading ? 'Verifying Certificate...' : 'Verify Certificate'}
         </button>
       </form>
-
+          <div className='mt-5 mb-5'>
+      {certificate && <CertificateCard cert={certificate} />}
+</div>
       {statusMessage && (
         <div className={`mt-6 p-4 rounded text-text break-words ${statusMessage.type === 'success' ? 'bg-success' : 'bg-error'}`}>
           {statusMessage.text}

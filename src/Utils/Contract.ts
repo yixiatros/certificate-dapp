@@ -14,8 +14,8 @@ export const ERGASIA_ABI = [
     "function revokeCertificate(uint256 certificateId, string revocationReason) public",
     "function getAllUsers() view returns (tuple(address userAddress, string name, uint8 role, bool active)[])",
     "function getAllCertificates() view returns (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason)[])",
-    "function verifyCertificateByHash(string fileHash) returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))",
-    "function verifyCertificateById(uint256 certificateId) returns ((uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))"
+    "function verifyCertificateByHash(string fileHash) returns  (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))",
+    "function verifyCertificateById(uint256 certificateId) returns (tuple(uint256 certificateId, string certificateType, address issuer, address holder, string fileHash, uint256 issueDate, uint256 expiryDate, string status, bool revoked, string revocationReason))"
 ];
 
 // Configurable contract address (can be set via environment variable or default fallback)
@@ -191,11 +191,16 @@ export async function revokeCertificate(
 }
 
 
+export interface VerificationResult {
+    certificate: CertificateData;
+    txHash: string;
+}
+
 
 /**
- * Verify a certificate by Hash on the smart contract (verifier or admin).
+ * Verify a certificate by Hash on-chain and return certificate data along with transaction hash.
  */
-export async function verifyCertificateByHash(certificateHash: string): Promise<CertificateData | null> {
+export async function verifyCertificateByHash(certificateHash: string): Promise<VerificationResult | null> {
     ensureValidContractAddress();
 
     if (typeof window === 'undefined' || !window.ethereum) {
@@ -206,19 +211,53 @@ export async function verifyCertificateByHash(certificateHash: string): Promise<
     const signer = await provider.getSigner();
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
 
+    const cleanHash = certificateHash.trim();
+    const hashWith0x = cleanHash.startsWith('0x') ? cleanHash : `0x${cleanHash}`;
+    const hashWithout0x = cleanHash.startsWith('0x') ? cleanHash.slice(2) : cleanHash;
+
+    let targetHash = hashWith0x;
+    let cert: any = null;
+
+    // 1. Try staticCall with '0x' prefix
     try {
-        const certificateData = await contract.verifyCertificateByHash(certificateHash);
-        return certificateData;
-    } catch (error) {
-        console.error('verifyCertificateByHash error:', error);
-        throw error;
+        cert = await contract.verifyCertificateByHash.staticCall(hashWith0x);
+    } catch {
+        // 2. Fallback: Try staticCall without '0x' prefix
+        try {
+            cert = await contract.verifyCertificateByHash.staticCall(hashWithout0x);
+            targetHash = hashWithout0x;
+        } catch {
+            return null; // Certificate not found under either format
+        }
     }
+
+    if (!cert || cert.certificateId === 0n) return null;
+
+    // 3. Execute on-chain transaction
+    const tx = await contract.verifyCertificateByHash(targetHash);
+    const receipt = await tx.wait();
+
+    return {
+        certificate: {
+            id: cert.certificateId,
+            certificateType: cert.certificateType,
+            issuer: cert.issuer,
+            holder: cert.holder,
+            fileHash: cert.fileHash,
+            issueDate: cert.issueDate,
+            expiryDate: cert.expiryDate,
+            status: cert.status,
+            isRevoked: cert.revoked,
+            revocationReason: cert.revocationReason,
+        },
+        txHash: receipt.hash,
+    };
 }
 
 /**
- * Verify a certificate by ID on the smart contract (verifier or admin).
+ * Verify a certificate by ID on-chain and return certificate data along with transaction hash.
  */
-export async function verifyCertificateById(certificateId: bigint | number): Promise<CertificateData | null> {
+export async function verifyCertificateById(certificateId: bigint | number): Promise<VerificationResult | null> {
     ensureValidContractAddress();
 
     if (typeof window === 'undefined' || !window.ethereum) {
@@ -230,14 +269,37 @@ export async function verifyCertificateById(certificateId: bigint | number): Pro
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ERGASIA_ABI, signer);
 
     try {
-        const certificateData = await contract.verifyCertificateById(certificateId);
-        return certificateData;
+        // 1. Get struct details via staticCall simulation
+        const cert = await contract.verifyCertificateById.staticCall(certificateId);
+
+        if (!cert || cert.certificateId === 0n) return null;
+
+        // 2. Submit transaction on-chain
+        const tx = await contract.verifyCertificateById(certificateId);
+        const receipt = await tx.wait();
+
+        const certificateData: CertificateData = {
+            id: cert.certificateId,
+            certificateType: cert.certificateType,
+            issuer: cert.issuer,
+            holder: cert.holder,
+            fileHash: cert.fileHash,
+            issueDate: cert.issueDate,
+            expiryDate: cert.expiryDate,
+            status: cert.status,
+            isRevoked: cert.revoked,
+            revocationReason: cert.revocationReason,
+        };
+
+        return {
+            certificate: certificateData,
+            txHash: receipt.hash,
+        };
     } catch (error) {
         console.error('verifyCertificateById error:', error);
         throw error;
     }
 }
-
 
 
 /**
@@ -400,8 +462,8 @@ export interface ContractEvent {
 const EVENT_ABI_FRAGMENTS = [
     "event UserRegistered(address indexed userAddress, string name, uint8 role)",
     "event CertificateIssued(uint256 indexed certificateId, address indexed issuer, address indexed holder)",
-    "event CertificateVerified(uint256 indexed certificateId, string fileHash)",
-    "event CertificateRevoked(uint256 indexed certificateId, string reason)",
+    "event CertificateVerified(uint256 indexed certificateId, string fileHash, address indexed verifier)",
+    "event CertificateRevoked(uint256 indexed certificateId, string reason, address indexed revocationOfficer)",
     "event CertificateExpired(uint256 certificateId)",
 ];
 
