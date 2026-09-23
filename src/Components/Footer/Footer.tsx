@@ -1,6 +1,7 @@
 import React from 'react'
 import reactLogo from '../../assets/react.svg'
 import viteLogo from '../../assets/vite.svg'
+import documentationPdf from "../../assets/documentation.pdf";
 import { FaGithub } from 'react-icons/fa'
 import { IoDocumentTextOutline } from 'react-icons/io5'
 type Props = {}
@@ -15,8 +16,12 @@ const Footer = (props: Props) => {
                       <IoDocumentTextOutline  className="text-lightBlue mb-5" />
                     <h2>Documentation</h2>
                     <p>Your questions, answered</p>
-                            <a className="mt-5 block text-sm text-text-secondary underline" href="https://vite.dev/" target="_blank">
-                                Development of Blockchain Technologies and Smart Contracts
+<a
+      className="mt-5 block text-sm text-text-secondary underline"
+      href={documentationPdf}
+      target="_blank"
+      rel="noopener noreferrer"
+    >                   Development of Blockchain Technologies and Smart Contracts
                             </a>
                        
                 </div>
