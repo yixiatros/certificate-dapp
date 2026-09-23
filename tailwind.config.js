@@ -44,7 +44,7 @@ module.exports = {
         error: "#FF6B6B",
         info: "#45C7E8",
 
-        lightBlue: "hsl(215.02, 98.39%, 51.18%)",
+        lightBlue: "#086efd",
         darkBlue: "hsl(213.86, 58.82%, 46.67%)",
         lightGreen: "hsl(156.62, 73.33%, 58.82%)",
       },

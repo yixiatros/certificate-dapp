@@ -22,7 +22,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-20">
           <Link to="/">
-            <img src={logo} alt="Logo" />
+            {/* <img width={32} src={logo} alt="Logo" /> */}
           </Link>
           <div className="hidden font-bold lg:flex">
             <Link to="/" className="text-text hover:text-darkBlue">
