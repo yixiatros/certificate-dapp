@@ -1,3 +1,6 @@
+# README
+<br>
+
 # Εργαλεία που χρησιμοποιούνται
 
 
@@ -342,6 +345,113 @@ http://localhost:5173
  **Transaction**     `0x96948f47f98051aed7e7f96fc58375a094d60fc4c2cd33a256e91d6424cd02dc` 
 
 
+
+
+## Block 10 — User Holder Registered by Admin
+
+**Holder:** `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720`
+
+**Transaction:** `0x0560c589c933002a3374fc891b569b961fe81865cff7a33960b483ba9371e37b`
+
+
+
+## Block 11 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199`                      
+  **Certificate ID** `2`    
+  **File Hash**      `8e35c2cd3bf6641bdb0e2050b76932cbb2e6034a0ddacc1d9bea82a6ba57f7cf`   
+ **Transaction**    `0x653fdb731148aa4925dea4e42ab5dc2642f12b9084716356c0a1edd0dc1201d0` 
+
+
+## Block 12 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199`                      
+  **Certificate ID** `3`    
+  **File Hash**      `148de9c5a7a44d19e56cd9ae1a554bf67847afb0c58f6e12fa29ac7ddfca9940`   
+ **Transaction**    `0x1c5a98d9b9234a06a2d0ec1274fa8f0374ebace736f575c70c5edde2f0d1466f` 
+
+## Block 13 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199`                      
+  **Certificate ID** `4`    
+  **File Hash**      `03042cf8100db386818cee4ff0f2972431a62ed78edbd09ac08accfabbefd818`   
+ **Transaction**    `0xe51dd13340b99ab750a83542d4e0a1bcf58f53c24fd2ed2f7d42d2cb191a8dcd` 
+
+
+
+## Block 14 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199`                      
+  **Certificate ID** `5`    
+  **File Hash**      `1cf0e1cd5270967e7e5b4749ef214b53b4be9591b8126f98addd441bc748349f`   
+ **Transaction**    `0x4ea426e97714edf80227e5189578c2f439ef1dacc2034138f0fec82b50a764fd` 
+
+
+## Block 15 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720`                      
+  **Certificate ID** `6`    
+  **File Hash**      `69c484bfcab87afc008e164767eddfceafb2075f6553397ffa429a71572bd82b`   
+ **Transaction**    `0x9ac20b832f6b81232985ada4bd9d8779701e5a2bd3257af88e0d0817b3c091b7` 
+## Block 16 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720`                      
+  **Certificate ID** `7`    
+  **File Hash**      `775b97c7ac87e24d06954929132cc2e7b8b6aba76645f94b1aa91c1e55712706`   
+ **Transaction**    `0xe54ee90eec54e59661706149268101eacc3f3ed58db2b2111e94ba1a7227ae44`
+
+## Block 17 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720`                      
+  **Certificate ID** `8`    
+  **File Hash**      `8c4f1cb26e1b8dce16fd0d9b7377d22e5e0a317218c9945d736c80b83f64dab6`   
+ **Transaction**    `0x065dcfde68c612bd9541d8ab94632763d7dbf3a1d1221f270be259c3a2cb47a4` 
+
+
+## Block 18 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720`                      
+  **Certificate ID** `9`    
+  **File Hash**      `d8efd073cafda9084e1f4d63c00b970ee0222cb2cb76d59a546ceed4db69ac04`   
+ **Transaction**    `0xf68357b95d3422d3705486aebddb9ed56a0ec3d6e30d4912f18183072c0f3767` 
+
+
+## Block 19 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720`                      
+  **Certificate ID** `10`    
+  **File Hash**      `9c073f316ee43b72f05cba34d7d31267ef721bb659c2381c160f2ba86caab528`   
+ **Transaction**    `0xd0662f911e59832a82011b8324606534ef0e79a7d2b48f5fadd8e045db6195a4` 
+
+
+## Block 20 — Certificate Issued
+
+ **From / Issuer**  `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`                         
+ **To / Holder**    `0xa0Ee7A142d267C1f36714E4a8F75612F20a79720`                      
+  **Certificate ID** `11`    
+  **File Hash**      `5bfb8b2291f73a47e80e0ea57756c4427ceb24d871e62071025852384672782a`   
+ **Transaction**    `0x8f1d4ef6ad6fbab267faeb9dedfadac7acabaed48c3b6aaf3b145de33ab18fe6` 
+
+
+
+
+
+
+
+
+
+
+
+
 ## Registered Roles
 
 | Role     | Address                                      |
@@ -359,22 +469,39 @@ http://localhost:5173
 ```text
 Admin
   │
-  ├── Register Holder ──────> Block 3
+  ├── Register Issuer ──────> Block 2
+  ├── Register Holder #1 ───> Block 3
   ├── Register Verifier ────> Block 4
   ├── Register Revoker ─────> Block 5
-  └── Register Auditor ─────> Block 6
-                              │
-                              ▼
-                    Certificate Issued
-                         Block 7
-                              │
-                              ▼
-                    Certificate Verified
-                         Block 8
-                              │
-                              ▼
-                    Certificate Revoked
-                         Block 9
+  ├── Register Auditor ─────> Block 6
+  │
+  │      Issuer
+  │        │
+  │        ├── Issue Certificate #1 ──> Block 7
+  │        │
+  │        │     Verifier
+  │        │        │
+  │        │        └── Verify Certificate #1 ─> Block 8
+  │        │ 
+  │        │     Revoker
+  │        │        │
+  │        │        └── Revoke Certificate #1 ─> Block 9
+  │        │
+  └── Register Holder #2 ───> Block 10
+           │
+           ├── Issue Certificate #2 ──> Block 11
+           ├── Issue Certificate #3 ──> Block 12
+           ├── Issue Certificate #4 ──> Block 13
+           ├── Issue Certificate #5 ──> Block 14
+           ├── Issue Certificate #6 ──> Block 15
+           ├── Issue Certificate #7 ──> Block 16
+           ├── Issue Certificate #8 ──> Block 17
+           ├── Issue Certificate #9 ──> Block 18
+           ├── Issue Certificate #10 ─> Block 19
+           └── Issue Certificate #11 ─> Block 20
+
+
+
 ```
 
 
